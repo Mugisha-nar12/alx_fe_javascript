@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a New Quote</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Add a New Quote</h1>
+        <a href="index.html" class="back-button">&larr; Back to All Quotes</a>
+
+        <div class="form-group">
+            <label for="newQuoteText">Quote Text:</label>
+            <textarea id="newQuoteText" rows="4" placeholder="Enter the quote..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="newQuoteCategory">Category:</label>
+            <input type="text" id="newQuoteCategory" placeholder="e.g., Wisdom, Humor, etc.">
+        </div>
+
+        <button id="saveQuoteBtn">Save Quote</button>
+        <p id="successMessage" class="success-message"></p>
+    </div>
+
+    <script src="add.js"></script>
+</body>
+</html>
+
