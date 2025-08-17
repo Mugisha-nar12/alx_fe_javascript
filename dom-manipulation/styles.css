@@ -72,7 +72,7 @@ h1, h2 {
     min-width: 200px;
 }
 
-/* Add Page Form */
+/* Form Groups */
 .form-group {
     margin-bottom: 20px;
 }
@@ -92,14 +92,8 @@ input[type="text"], textarea {
     box-sizing: border-box;
 }
 
-.success-message {
-    color: #27ae60;
-    font-weight: bold;
-    margin-top: 15px;
-}
-
 /* Buttons and Links */
-button, .add-new-button, .back-button {
+button, .add-new-button {
     display: inline-block;
     background-color: #2ecc71;
     color: white;
@@ -117,16 +111,16 @@ button:hover, .add-new-button:hover {
     background-color: #27ae60;
 }
 
-.add-new-button, .back-button {
+.header-buttons {
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
-.back-button {
-    background-color: #95a5a6;
-}
-
-.back-button:hover {
-    background-color: #7f8c8d;
+.import-export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 /* Quote Action Buttons */
@@ -159,7 +153,7 @@ button:hover, .add-new-button:hover {
 }
 
 
-/* Edit Modal */
+/* Modals */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -183,7 +177,7 @@ button:hover, .add-new-button:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-.close-button {
+.close-button, .close-add-button {
     position: absolute;
     top: 15px;
     right: 15px;
@@ -193,13 +187,6 @@ button:hover, .add-new-button:hover {
     cursor: pointer;
 }
 
-.close-button:hover {
+.close-button:hover, .close-add-button:hover {
     color: #333;
-}
-
-
-.header-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
 }

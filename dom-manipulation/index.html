@@ -21,6 +21,12 @@
             </select>
         </div>
 
+        <div class="import-export-buttons">
+            <button id="exportQuotesBtn" class="add-new-button">Export Quotes</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+            <label for="importFile" class="add-new-button">Import Quotes</label>
+        </div>
+
         <h2 id="quotesHeader">All Quotes</h2>
         <div id="quotesContainer">
             <!-- Quotes will be dynamically inserted here -->
@@ -41,23 +47,6 @@
                 <input type="text" id="editCategory">
             </div>
             <button id="saveEditBtn">Save Changes</button>
-        </div>
-    </div>
-
-    <!-- Add Quote Modal -->
-    <div id="addModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <span class="close-add-button">&times;</span>
-            <h2>Add a New Quote</h2>
-            <div class="form-group">
-                <label for="newQuoteText">Quote Text:</label>
-                <textarea id="newQuoteText" rows="4" placeholder="Enter the quote..."></textarea>
-            </div>
-            <div class="form-group">
-                <label for="newQuoteCategory">Category:</label>
-                <input type="text" id="newQuoteCategory" placeholder="e.g., Wisdom, Humor, etc.">
-            </div>
-            <button id="saveQuoteBtn">Save Quote</button>
         </div>
     </div>
 

@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const addQuoteBtn = document.getElementById('addQuoteBtn');
     const randomQuoteBtn = document.getElementById('randomQuoteBtn');
 
+    // Import/Export Buttons
+    const exportQuotesBtn = document.getElementById('exportQuotesBtn');
+    const importFile = document.getElementById('importFile');
+
     let allQuotes = [];
     let editIndex = -1;
 
@@ -191,6 +195,47 @@ document.addEventListener('DOMContentLoaded', () => {
         displayQuotes([randomQuote]);
     }
 
+    function exportToJsonFile() {
+        const dataStr = JSON.stringify(allQuotes, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(dataBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = 'quotes.json';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+    }
+
+    function importFromJsonFile(event) {
+        const fileReader = new FileReader();
+        fileReader.onload = function(e) {
+            try {
+                const importedQuotes = JSON.parse(e.target.result);
+                if (Array.isArray(importedQuotes) && importedQuotes.every(q => q.text && q.category)) {
+                    const combinedQuotes = [...allQuotes, ...importedQuotes];
+                    const uniqueQuotes = combinedQuotes.filter((quote, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.text.toLowerCase() === quote.text.toLowerCase() && t.category.toLowerCase() === quote.category.toLowerCase()
+                        ))
+                    );
+                    allQuotes = uniqueQuotes;
+                    rerenderQuotes();
+                    alert('Quotes imported successfully!');
+                } else {
+                    alert('Invalid JSON file format.');
+                }
+            } catch (error) {
+                alert('Error reading or parsing JSON file.');
+                console.error(error);
+            }
+        };
+        if (event.target.files[0]) {
+            fileReader.readAsText(event.target.files[0]);
+        }
+    }
+
     function initialize() {
         loadQuotes();
         populateCategoryFilter();
@@ -203,6 +248,8 @@ document.addEventListener('DOMContentLoaded', () => {
         saveEditBtn.addEventListener('click', saveEditedQuote);
         addQuoteBtn.addEventListener('click', createAddQuoteForm);
         randomQuoteBtn.addEventListener('click', showRandomQuote);
+        exportQuotesBtn.addEventListener('click', exportToJsonFile);
+        importFile.addEventListener('change', importFromJsonFile);
     }
 
     initialize();
