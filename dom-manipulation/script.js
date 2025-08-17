@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function rerenderQuotes() {
         saveQuotes();
         loadQuotes();
-        populateCategoryFilter();
-        handleFilterChange();
+        populateCategories();
+        filterQuotes();
     }
 
     function displayQuotes(quotesToDisplay) {
@@ -63,10 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function populateCategoryFilter() {
+    function populateCategories() {
         const selectedValue = categoryFilter.value;
         if (allQuotes.length === 0) {
-            categoryFilter.innerHTML = '<option value="all">No Categories</option>';
+            categoryFilter.innerHTML = '<option value="All">No Categories</option>';
             return;
         }
         const categories = ['All', ...new Set(allQuotes.map(q => q.category))];
@@ -75,8 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ).join('');
     }
 
-    function handleFilterChange() {
+    function filterQuotes() {
         const selectedCategory = categoryFilter.value;
+        localStorage.setItem('selectedCategory', selectedCategory); // Save selection
         quotesHeader.textContent = selectedCategory === 'All' ? "All Quotes" : `Quotes in "${selectedCategory}"`;
         const quotesToDisplay = selectedCategory === 'All' ? allQuotes : allQuotes.filter(quote => quote.category === selectedCategory);
         displayQuotes(quotesToDisplay);
@@ -238,10 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initialize() {
         loadQuotes();
-        populateCategoryFilter();
-        displayQuotes(allQuotes);
+        populateCategories();
         
-        categoryFilter.addEventListener('change', handleFilterChange);
+        const lastSelectedCategory = localStorage.getItem('selectedCategory');
+        if (lastSelectedCategory) {
+            categoryFilter.value = lastSelectedCategory;
+        }
+        
+        filterQuotes();
+        
+        categoryFilter.addEventListener('change', filterQuotes);
         quotesContainer.addEventListener('click', handleQuoteActions);
         
         closeButton.addEventListener('click', closeEditModal);
