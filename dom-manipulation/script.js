@@ -3,23 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryFilter = document.getElementById('categoryFilter');
     const quotesHeader = document.getElementById('quotesHeader');
     
-    // Modals
+    // Edit Modal Elements
     const editModal = document.getElementById('editModal');
-    const addModal = document.getElementById('addModal');
-
-    // Buttons
     const closeButton = document.querySelector('.close-button');
-    const closeAddButton = document.querySelector('.close-add-button');
     const saveEditBtn = document.getElementById('saveEditBtn');
-    const addQuoteBtn = document.getElementById('addQuoteBtn');
-    const saveQuoteBtn = document.getElementById('saveQuoteBtn');
-    const randomQuoteBtn = document.getElementById('randomQuoteBtn');
-
-    // Form Fields
     const editText = document.getElementById('editText');
     const editCategory = document.getElementById('editCategory');
-    const newQuoteText = document.getElementById('newQuoteText');
-    const newQuoteCategory = document.getElementById('newQuoteCategory');
+
+    // Header Buttons
+    const addQuoteBtn = document.getElementById('addQuoteBtn');
+    const randomQuoteBtn = document.getElementById('randomQuoteBtn');
 
     let allQuotes = [];
     let editIndex = -1;
@@ -35,49 +28,54 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('quotes', JSON.stringify(allQuotes));
     }
 
+    function rerenderQuotes() {
+        saveQuotes();
+        loadQuotes();
+        populateCategoryFilter();
+        handleFilterChange();
+    }
+
     function displayQuotes(quotesToDisplay) {
+        quotesContainer.innerHTML = ''; // Clear existing quotes
         if (!quotesToDisplay || quotesToDisplay.length === 0) {
-            quotesContainer.innerHTML = '<p>No quotes found. <a href="#" id="addQuoteLink">Add one!</a></p>';
-            document.getElementById('addQuoteLink')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                openAddModal();
-            });
+            quotesContainer.innerHTML = '<p>No quotes found for this category.</p>';
             return;
         }
 
-        quotesContainer.innerHTML = quotesToDisplay.map(quote => {
+        quotesToDisplay.forEach(quote => {
             const mainIndex = allQuotes.findIndex(q => q.text === quote.text && q.category === quote.category);
-            return `
-            <div class="quote-card" data-index="${mainIndex}">
+            const quoteCard = document.createElement('div');
+            quoteCard.className = 'quote-card';
+            quoteCard.dataset.index = mainIndex;
+            quoteCard.innerHTML = `
                 <p class="quote-text">"${quote.text}"</p>
                 <p class="quote-category">${quote.category}</p>
                 <div class="quote-actions">
                     <button class="edit-btn">Edit</button>
                     <button class="delete-btn">Delete</button>
                 </div>
-            </div>`;
-        }).join('');
+            `;
+            quotesContainer.appendChild(quoteCard);
+        });
     }
 
     function populateCategoryFilter() {
+        const selectedValue = categoryFilter.value;
         if (allQuotes.length === 0) {
             categoryFilter.innerHTML = '<option value="all">No Categories</option>';
             return;
         }
         const categories = ['All', ...new Set(allQuotes.map(q => q.category))];
-        categoryFilter.innerHTML = categories.map(category => `<option value="${category}">${category}</option>`).join('');
+        categoryFilter.innerHTML = categories.map(category => 
+            `<option value="${category}" ${category === selectedValue ? 'selected' : ''}>${category}</option>`
+        ).join('');
     }
 
     function handleFilterChange() {
         const selectedCategory = categoryFilter.value;
-        if (selectedCategory === 'All') {
-            displayQuotes(allQuotes);
-            quotesHeader.textContent = "All Quotes";
-        } else {
-            const filtered = allQuotes.filter(quote => quote.category === selectedCategory);
-            displayQuotes(filtered);
-            quotesHeader.textContent = `Quotes in "${selectedCategory}"`;
-        }
+        quotesHeader.textContent = selectedCategory === 'All' ? "All Quotes" : `Quotes in "${selectedCategory}"`;
+        const quotesToDisplay = selectedCategory === 'All' ? allQuotes : allQuotes.filter(quote => quote.category === selectedCategory);
+        displayQuotes(quotesToDisplay);
     }
 
     function handleQuoteActions(event) {
@@ -96,8 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function deleteQuote(index) {
         if (confirm('Are you sure you want to delete this quote?')) {
             allQuotes.splice(index, 1);
-            saveQuotes();
-            initialize();
+            rerenderQuotes();
         }
     }
 
@@ -122,22 +119,53 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         allQuotes[editIndex] = { text: newText, category: newCategory };
-        saveQuotes();
         closeEditModal();
-        initialize();
+        rerenderQuotes();
     }
 
-    function openAddModal() {
+    function createAddQuoteForm() {
+        let addModal = document.getElementById('addModal');
+        if (addModal) {
+            addModal.style.display = 'flex';
+            return;
+        }
+
+        addModal = document.createElement('div');
+        addModal.id = 'addModal';
+        addModal.className = 'modal-overlay';
+        
+        addModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-add-button">&times;</span>
+                <h2>Add a New Quote</h2>
+                <div class="form-group">
+                    <label for="newQuoteText">Quote Text:</label>
+                    <textarea id="newQuoteText" rows="4" placeholder="Enter the quote..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="newQuoteCategory">Category:</label>
+                    <input type="text" id="newQuoteCategory" placeholder="e.g., Wisdom, Humor, etc.">
+                </div>
+                <button id="saveQuoteBtn">Save Quote</button>
+            </div>
+        `;
+        
+        document.body.appendChild(addModal);
         addModal.style.display = 'flex';
-    }
 
-    function closeAddModal() {
-        addModal.style.display = 'none';
+        document.querySelector('.close-add-button').addEventListener('click', () => {
+            addModal.style.display = 'none';
+        });
+
+        document.getElementById('saveQuoteBtn').addEventListener('click', addQuote);
     }
 
     function addQuote() {
+        const newQuoteText = document.getElementById('newQuoteText');
+        const newQuoteCategory = document.getElementById('newQuoteCategory');
         const text = newQuoteText.value.trim();
         const category = newQuoteCategory.value.trim();
+
         if (!text || !category) {
             alert('Please fill in both the quote text and the category.');
             return;
@@ -147,11 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         allQuotes.push({ text, category });
-        saveQuotes();
-        newQuoteText.value = '';
-        newQuoteCategory.value = '';
-        closeAddModal();
-        initialize();
+        document.getElementById('addModal').style.display = 'none';
+        rerenderQuotes();
     }
 
     function showRandomQuote() {
@@ -162,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomIndex = Math.floor(Math.random() * allQuotes.length);
         const randomQuote = allQuotes[randomIndex];
         quotesHeader.textContent = "Random Quote";
+        categoryFilter.value = "All";
         displayQuotes([randomQuote]);
     }
 
@@ -173,16 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
         categoryFilter.addEventListener('change', handleFilterChange);
         quotesContainer.addEventListener('click', handleQuoteActions);
         
-        // Edit Modal Listeners
         closeButton.addEventListener('click', closeEditModal);
         saveEditBtn.addEventListener('click', saveEditedQuote);
-
-        // Add Modal Listeners
-        addQuoteBtn.addEventListener('click', openAddModal);
-        closeAddButton.addEventListener('click', closeAddModal);
-        saveQuoteBtn.addEventListener('click', addQuote);
-
-        // Random Quote Listener
+        addQuoteBtn.addEventListener('click', createAddQuoteForm);
         randomQuoteBtn.addEventListener('click', showRandomQuote);
     }
 
