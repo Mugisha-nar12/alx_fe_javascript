@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (JSON.stringify(allQuotes) !== JSON.stringify(updatedQuotes)) {
                 allQuotes = updatedQuotes;
                 rerenderQuotes();
-                showNotification('Quotes synced with the server.');
+                showNotification('Quotes synced with server!');
             } else {
                 showNotification('Quotes are up to date.');
             }
