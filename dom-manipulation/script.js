@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const quotesContainer = document.getElementById('quotesContainer');
+    const quoteDisplay = document.getElementById('quotesContainer');
     const categoryFilter = document.getElementById('categoryFilter');
     const quotesHeader = document.getElementById('quotesHeader');
     
@@ -36,13 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
         saveQuotes();
         loadQuotes();
         populateCategories();
-        filterQuotes();
+        filterQuote();
     }
 
     function displayQuotes(quotesToDisplay) {
-        quotesContainer.innerHTML = ''; // Clear existing quotes
+        quoteDisplay.innerHTML = ''; // Clear existing quotes
         if (!quotesToDisplay || quotesToDisplay.length === 0) {
-            quotesContainer.innerHTML = '<p>No quotes found for this category.</p>';
+            quoteDisplay.innerHTML = '<p>No quotes found for this category.</p>';
             return;
         }
 
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="delete-btn">Delete</button>
                 </div>
             `;
-            quotesContainer.appendChild(quoteCard);
+            quoteDisplay.appendChild(quoteCard);
         });
     }
 
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ).join('');
     }
 
-    function filterQuotes() {
+    function filterQuote() {
         const selectedCategory = categoryFilter.value;
         localStorage.setItem('selectedCategory', selectedCategory); // Save selection
         quotesHeader.textContent = selectedCategory === 'All' ? "All Quotes" : `Quotes in "${selectedCategory}"`;
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showRandomQuote() {
         if (allQuotes.length === 0) {
-            quotesContainer.innerHTML = '<p>No quotes available to display.</p>';
+            quoteDisplay.innerHTML = '<p>No quotes available to display.</p>';
             return;
         }
         const randomIndex = Math.floor(Math.random() * allQuotes.length);
@@ -246,10 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
             categoryFilter.value = lastSelectedCategory;
         }
         
-        filterQuotes();
+        filterQuote();
         
-        categoryFilter.addEventListener('change', filterQuotes);
-        quotesContainer.addEventListener('click', handleQuoteActions);
+        categoryFilter.addEventListener('change', filterQuote);
+        quoteDisplay.addEventListener('click', handleQuoteActions);
         
         closeButton.addEventListener('click', closeEditModal);
         saveEditBtn.addEventListener('click', saveEditedQuote);
