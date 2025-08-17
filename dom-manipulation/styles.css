@@ -196,3 +196,10 @@ button:hover, .add-new-button:hover {
 .close-button:hover {
     color: #333;
 }
+
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
